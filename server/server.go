@@ -4,16 +4,25 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hokkung/srv/server"
+	srv "github.com/hokkung/srv/server"
 )
 
-type ServerCustomizer struct {
+type Customizer struct {
 }
 
-func (c *ServerCustomizer) Register(s *server.Server) {
-	s.Engine.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
+func (c *Customizer) Register(s *srv.Server) {
+	s.Engine.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
+
+}
+
+func NewCustomizer() *Customizer {
+	return &Customizer{}
+}
+
+func ProvideCustomizer() (srv.ServerCustomizer, func(), error) {
+	return NewCustomizer(), func() {}, nil
 }
