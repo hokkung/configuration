@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	"github.com/hokkung/configuration/di"
+	"github.com/hokkung/configuration/pkg/env"
 	srvutil "github.com/hokkung/srv/util"
 )
 
 func main() {
-	// env.MustLoadEnv()
+	env.MustLoadEnv()
 
 	container, cleanUp, err := di.InitializeApplication()
 	if err != nil {
