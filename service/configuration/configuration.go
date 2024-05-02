@@ -2,9 +2,12 @@ package configuration
 
 import (
 	"context"
+	"time"
 
 	ec "github.com/hokkung/configuration/entity/configuration"
+	"github.com/hokkung/configuration/pkg/id"
 	"github.com/hokkung/configuration/repository/configuration"
+	"github.com/hokkung/configuration/service"
 )
 
 type ConfigurationService interface {
@@ -14,6 +17,7 @@ type ConfigurationService interface {
 
 type configurationService struct {
 	configurationRepository configuration.ConfigurationRepository
+	entityCallbackHandler   service.EntityHandler
 }
 
 func (c configurationService) Get(ctx context.Context, key string) (*ec.Configuration, error) {
@@ -31,15 +35,32 @@ func (c configurationService) Create(ctx context.Context, ent *ec.Configuration)
 		return err
 	}
 
+	ent2 := ent
+	c.entityCallbackHandler.HandleCreatedEvent(&service.CreatedEvent{
+		ID:               id.RandomID(),
+		EventCreatedTime: time.Now(),
+		Payload:          ent2,
+	})
+
 	return nil
 }
 
-func NewConfigurationService(configurationRepository configuration.ConfigurationRepository) *configurationService {
+func NewConfigurationService(
+	configurationRepository configuration.ConfigurationRepository,
+	callbackHandler ConfigurationHandler,
+) *configurationService {
 	return &configurationService{
 		configurationRepository: configurationRepository,
+		entityCallbackHandler:   callbackHandler,
 	}
 }
 
-func ProvideConfigurationService(configurationRepository configuration.ConfigurationRepository) ConfigurationService {
-	return NewConfigurationService(configurationRepository)
+func ProvideConfigurationService(
+	configurationRepository configuration.ConfigurationRepository,
+	callbackHandler ConfigurationHandler,
+) ConfigurationService {
+	return NewConfigurationService(
+		configurationRepository,
+		callbackHandler,
+	)
 }

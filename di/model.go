@@ -36,6 +36,7 @@ var HandlerSet = wire.NewSet(
 
 var ServiceSet = wire.NewSet(
 	sc.ProvideConfigurationService,
+	sc.ProvideConfigurationHandler,
 )
 
 type ApplicationAPI struct {
