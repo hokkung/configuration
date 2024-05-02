@@ -9,7 +9,7 @@ import (
 
 type ConfigurationService interface {
 	Get(ctx context.Context, key string) (*ec.Configuration, error)
-	Save(ctx context.Context, key string, val string) error
+	Create(ctx context.Context, ent *ec.Configuration) error
 }
 
 type configurationService struct {
@@ -17,10 +17,20 @@ type configurationService struct {
 }
 
 func (c configurationService) Get(ctx context.Context, key string) (*ec.Configuration, error) {
-	return nil, nil
+	ent, err := c.configurationRepository.FindByID(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+
+	return ent, nil
 }
 
-func (c configurationService) Save(ctx context.Context, key string, val string) error {
+func (c configurationService) Create(ctx context.Context, ent *ec.Configuration) error {
+	err := c.configurationRepository.Create(ctx, ent)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
