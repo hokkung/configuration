@@ -23,9 +23,14 @@ func (h *ConfigurationHandler) Ping() gin.HandlerFunc {
 func (h *ConfigurationHandler) Get() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		key := ctx.Param("key")
-		res, err := h.configurationRepository.Get(ctx, key)
+		res, err := h.configurationRepository.FindByID(ctx, key)
 		if err != nil {
 			ctx.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		if res == nil {
+			ctx.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
@@ -42,12 +47,12 @@ func (h *ConfigurationHandler) Create() gin.HandlerFunc {
 			return
 		}
 
-		err := h.configurationRepository.Save(ctx, &config)
+		err := h.configurationRepository.Create(ctx, &config)
 		if err != nil {
 			ctx.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		
+
 		ctx.JSON(http.StatusOK, gin.H{
 			config.Key: config.Val,
 		})
