@@ -31,13 +31,14 @@ func InitializeApplication() (*ApplicationAPI, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	configurationService := configuration2.ProvideConfigurationService(configurationRepository)
-	configurationHandler, cleanup2, err := configuration3.ProvideConfigurationHandler(configurationService)
+	configurationHandler := configuration2.ProvideConfigurationHandler()
+	configurationService := configuration2.ProvideConfigurationService(configurationRepository, configurationHandler)
+	configurationConfigurationHandler, cleanup2, err := configuration3.ProvideConfigurationHandler(configurationService)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	serverCustomizer, cleanup3, err := server.ProvideCustomizer(configurationHandler)
+	serverCustomizer, cleanup3, err := server.ProvideCustomizer(configurationConfigurationHandler)
 	if err != nil {
 		cleanup2()
 		cleanup()
