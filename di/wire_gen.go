@@ -8,10 +8,11 @@ package di
 
 import (
 	"github.com/hokkung/configuration/config"
-	configuration2 "github.com/hokkung/configuration/handler/configuration"
+	configuration3 "github.com/hokkung/configuration/handler/configuration"
 	"github.com/hokkung/configuration/pkg/radis"
 	"github.com/hokkung/configuration/repository/configuration"
 	"github.com/hokkung/configuration/server"
+	configuration2 "github.com/hokkung/configuration/service/configuration"
 	server2 "github.com/hokkung/srv/server"
 )
 
@@ -30,7 +31,8 @@ func InitializeApplication() (*ApplicationAPI, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	configurationHandler, cleanup2, err := configuration2.ProvideConfigurationHandler(configurationRepository)
+	configurationService := configuration2.ProvideConfigurationService(configurationRepository)
+	configurationHandler, cleanup2, err := configuration3.ProvideConfigurationHandler(configurationService)
 	if err != nil {
 		cleanup()
 		return nil, nil, err

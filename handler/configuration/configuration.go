@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	ec "github.com/hokkung/configuration/entity/configuration"
-	"github.com/hokkung/configuration/repository/configuration"
+	"github.com/hokkung/configuration/service/configuration"
 )
 
 type ConfigurationHandler struct {
-	configurationRepository configuration.ConfigurationRepository
+	configurationService configuration.ConfigurationService
 }
 
 func (h *ConfigurationHandler) Ping() gin.HandlerFunc {
@@ -23,7 +23,7 @@ func (h *ConfigurationHandler) Ping() gin.HandlerFunc {
 func (h *ConfigurationHandler) Get() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		key := ctx.Param("key")
-		res, err := h.configurationRepository.FindByID(ctx, key)
+		res, err := h.configurationService.Get(ctx, key)
 		if err != nil {
 			ctx.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -47,7 +47,7 @@ func (h *ConfigurationHandler) Create() gin.HandlerFunc {
 			return
 		}
 
-		err := h.configurationRepository.Create(ctx, &config)
+		err := h.configurationService.Create(ctx, &config)
 		if err != nil {
 			ctx.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -59,12 +59,12 @@ func (h *ConfigurationHandler) Create() gin.HandlerFunc {
 	}
 }
 
-func NewConfigurationHandler(r configuration.ConfigurationRepository) *ConfigurationHandler {
+func NewConfigurationHandler(r configuration.ConfigurationService) *ConfigurationHandler {
 	return &ConfigurationHandler{
-		configurationRepository: r,
+		configurationService: r,
 	}
 }
 
-func ProvideConfigurationHandler(r configuration.ConfigurationRepository) (*ConfigurationHandler, func(), error) {
+func ProvideConfigurationHandler(r configuration.ConfigurationService) (*ConfigurationHandler, func(), error) {
 	return NewConfigurationHandler(r), func() {}, nil
 }
